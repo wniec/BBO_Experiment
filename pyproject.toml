@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "bbo-experiment"
+version = "0.1.0"
+description = ""
+authors = ["wniec <niecwladek@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+numpy = "1.26.4"
+pypop7 = "0.0.82"
+coco-experiment = "^2.8.1"
+cocopp = "^2.7.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
