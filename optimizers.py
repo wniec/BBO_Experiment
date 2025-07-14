@@ -1,6 +1,6 @@
-from typing import Any
 from itertools import product
 
+from pypop7.optimizers.core import Optimizer
 from pypop7.optimizers.es.lmcma import LMCMA  # noqa
 from pypop7.optimizers.es.mmes import MMES  # noqa
 from pypop7.optimizers.es.ddcma import DDCMA  # noqa
@@ -152,7 +152,9 @@ methods2groups = {
 
 def _get_parameter_grid() -> dict[str, dict[str, list]]:
     sigma = [0.1, 0.3, 0.6, 0.9, 1.5, 3.0]
-    x = [[]]  # Placeholder value, indicates that initial x must be set according to number of dimensions
+    x = [
+        []
+    ]  # Placeholder value, indicates that initial x must be set according to number of dimensions
     return {
         "ES_parameters": {"sigma": sigma},
         "EDA_parameters": {},
@@ -175,14 +177,13 @@ def _get_parameter_grid() -> dict[str, dict[str, list]]:
 
 
 def _get_params(
-        opt_name: str, grid: dict[str, dict[str, list]]) -> dict[str, list[Any]]:
+    opt_name: str, grid: dict[str, dict[str, list]]
+) -> dict[str, list[float | int]]:
     method_group = methods2groups[opt_name]
     parameters_name = method_group.split("_")[0] + "_parameters"
     result = grid[parameters_name].copy()
     if opt_name == "CCPSO2":
-        result["group_sizes"] = [
-            [40 // i for i in [20, 10, 5, 2]]
-        ]
+        result["group_sizes"] = [[40 // i for i in [20, 10, 5, 2]]]
     if opt_name == "CPSO":
         result["n_individuals"] = [20]
     if opt_name in ["SRS", "ARHC", "RHC"]:
@@ -192,19 +193,19 @@ def _get_params(
     return result
 
 
-def _get_optimizers() -> dict[str, tuple[Any, dict]]:
+def _get_optimizers() -> list[tuple[Optimizer, dict]]:
     param_grid = _get_parameter_grid()
-    optimizers: dict[str, tuple[Any, dict]] = {}
+    optimizers: list[tuple[Optimizer, dict]] = []
     for key, cls in modules.items():
         all_possible_params = _get_params(key, param_grid)
         params_names = list(all_possible_params.keys())
         for params_set in product(
-                *[all_possible_params[name] for name in params_names]
+            *[all_possible_params[name] for name in params_names]
         ):
             params_dict = {name: val for name, val in zip(params_names, params_set)}
-            optimizers[key] = (cls, params_dict)
+            optimizers.append((cls, params_dict))
 
     return optimizers
 
 
-optimizers = _get_optimizers()
+optimizers = sorted(_get_optimizers(), key=lambda x: str(x))
