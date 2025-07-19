@@ -4,8 +4,13 @@ import cocopp  # post-processing module of `COCO`
 from pypop7.optimizers.core import Optimizer
 
 
-def coco_bbob(optimizer: Optimizer, options: dict, evaluations_multiplier: int = 1_000):
-    suite, output = "bbob", f"{optimizer.__name__}_{evaluations_multiplier}"
+def coco_bbob(
+    optimizer: Optimizer,
+    options: dict,
+    evaluations_multiplier: int = 1_000,
+    run_id: id = 0,
+):
+    suite, output = "bbob", f"{run_id}_{evaluations_multiplier}"
     observer = cocoex.Observer(suite, "result_folder: " + output)
     cocoex.utilities.MiniPrint()
     for function in cocoex.Suite(suite, "", ""):
@@ -24,7 +29,7 @@ def coco_bbob(optimizer: Optimizer, options: dict, evaluations_multiplier: int =
     return observer.result_folder
 
 
-def coco_bbob_single_function(optimizer, function, options):
+def coco_bbob_single_function(optimizer, function: cocoex.interface.Problem, options):
     problem = {
         "fitness_function": function,
         "ndim_problem": function.dimension,
@@ -36,21 +41,14 @@ def coco_bbob_single_function(optimizer, function, options):
     return results
 
 
-def get_aocc(run_data: np.ndarray, lower_bound: float, upper_bound: float):
-    normalised_run = (
-        np.minimum(np.maximum(run_data, lower_bound), upper_bound) - lower_bound
-    ) / (upper_bound - lower_bound)
-    return 1 - normalised_run.mean(axis=0)[0, 0]
+def get_auoc(run_data: np.ndarray):
+    return run_data.mean(axis=0)[0, 0]
 
 
-def average_aocc(function_data: cocopp.pproc.DataSet):
+def average_auoc(function_data: cocopp.pproc.DataSet):
+    # Area under optimization curve I used that instead of constrained version, because various functions have optima
+    # in different ranges, not necessarily [0, 1]
     trials = function_data.splitByTrials(whichdata="funvals")
-    # trials[0] - ERF
-    # trials[1] - fitness
-    lower_bound = 1e-08
-    upper_bound = 1e2  # if dimensions <= 20 else 1e8
     # average over all runs
-    result = sum(
-        get_aocc(run_data, lower_bound, upper_bound) for key, run_data in trials.items()
-    ) / len(trials)
+    result = sum(get_auoc(run_data) for key, run_data in trials.items()) / len(trials)
     return result
