@@ -29,5 +29,3 @@ if [ $? -ne 0 ]; then
 else
     echo "Experiment run completed: $SLURM_ARRAY_TASK_ID"
 fi
-rm -rf "exdata/${SLURM_ARRAY_TASK_ID}_.*"
-rm -rf "ppdata/${SLURM_ARRAY_TASK_ID}_.*"

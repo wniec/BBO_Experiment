@@ -1,6 +1,3 @@
-from itertools import product
-
-from pypop7.optimizers.core import Optimizer
 from pypop7.optimizers.es.lmcma import LMCMA  # noqa
 from pypop7.optimizers.es.mmes import MMES  # noqa
 from pypop7.optimizers.es.ddcma import DDCMA  # noqa
@@ -86,126 +83,88 @@ from pypop7.optimizers.rs.prs import PRS  # noqa
 
 from pypop7.optimizers.bo.lamcts import LAMCTS  # noqa
 
-ES_methods = [
-    "RES",
-    "SSAES",
-    "DSAES",
-    "CSAES",
-    "SAES",
-    "SAMAES",
-    "CMAES",
-    "MAES",
-    "FMAES",
-    "DDCMA",
-    "OPOC2006",
-    "SEPCMAES",
-    "OPOC2009",
-    "CCMAES2009",
-    "OPOA2010",
-    "LMCMAES",
-    "OPOA2015",
-    "CCMAES2016",
-    "LMCMA",
-    "R1ES",
-    "RMES",
-    "LMMAES",
-    "MMES",
-]
-EDA_methods = ["UMDA", "EMNA", "AEMNA", "RPEDA"]
-NES_methods = [
-    "SGES",
-    "ONES",
-    "ENES",
-    "XNES",
-    "SNES",
-    "R1NES",
-    "VDCMA",
-    "VKDCMA",
-]
-CEM_methods = ["SCEM", "DSCEM", "MRAS"]
-DE_methods = ["CDE", "TDE", "JADE", "CODE", "SHADE"]
-PSO_methods = ["SPSO", "SPSOL", "CPSO", "CLPSO", "IPSO", "CCPSO2"]
-CC_methods = ["COEA", "HCC", "COSYNE", "COCMA"]
-SA_methods = ["CSA", "ESA", "NSA"]
-GA_methods = ["GENITOR", "G3PCX", "GL25"]
-EP_methods = ["CEP", "FEP", "LEP"]
-DS_methods = ["CS", "HJ", "NM", "GPS", "POWELL"]
-RS_methods = ["PRS", "RHC", "ARHC", "SRS", "GS", "BES"]
-BO_methods = ["LAMCTS"]
-
 modules = {
     key: val
     for key, val in globals().items()
     if all((i.isupper() or i.isdigit()) for i in key)
 }
 
-methods_groups = {
-    key: val
-    for key, val in globals().items()
-    if isinstance(val, list) and "_" in key and key[0].isupper()
-}
 
-methods2groups = {
-    i: group for group, content in methods_groups.items() for i in content
-}
+def extract(name: str):
+    splitted = name.split("{")
+    cls = modules[splitted[0]]
+    params = eval("{" + splitted[1])
+    return cls, params
 
 
-def _get_parameter_grid() -> dict[str, dict[str, list]]:
-    sigma = [0.1, 0.3, 0.6, 0.9, 1.5, 3.0]
-    x = [
-        []
-    ]  # Placeholder value, indicates that initial x must be set according to number of dimensions
-    return {
-        "ES_parameters": {"sigma": sigma},
-        "EDA_parameters": {},
-        "NES_parameters": {"sigma": sigma},
-        "CEM_parameters": {"sigma": sigma},
-        "DE_parameters": {},
-        "PSO_parameters": {},
-        "CC_parameters": {},
-        "SA_parameters": {
-            "x": x,
-            "sigma": sigma,
-            "temperature": [20.0, 50.0, 100.0, 200.0, 500.0],
-        },
-        "GA_parameters": {},
-        "EP_parameters": {"sigma": sigma},
-        "DS_parameters": {"x": x, "sigma": sigma},
-        "RS_parameters": {"x": x},
-        "BO_parameters": {},
-    }
+failed_optimizers = ["FEP{'sigma': 0.3}",
+                     "SGES{'sigma': 3.0}",
+                     'COEA{}',
+                     "SGES{'sigma': 0.9}",
+                     'COCMA{}',
+                     "MMES{'sigma': 0.6}",
+                     "MRAS{'sigma': 0.3}",
+                     'RPEDA{}',
+                     'AEMNA{}',
+                     'GL25{}',
+                     'EMNA{}',
+                     "SGES{'sigma': 0.1}",
+                     "FEP{'sigma': 1.5}",
+                     "FEP{'sigma': 0.9}",
+                     "ENES{'sigma': 0.6}",
+                     "FEP{'sigma': 3.0}",
+                     "CEP{'sigma': 1.5}",
+                     "CEP{'sigma': 0.9}",
+                     "ONES{'sigma': 3.0}",
+                     "MMES{'sigma': 1.5}",
+                     "SGES{'sigma': 1.5}",
+                     "MMES{'sigma': 3.0}",
+                     'COSYNE{}',
+                     "ENES{'sigma': 0.1}",
+                     "FEP{'sigma': 0.6}",
+                     "DDCMA{'sigma': 0.6}",
+                     "ENES{'sigma': 1.5}",
+                     "LEP{'sigma': 3.0}",
+                     "ONES{'sigma': 0.3}",
+                     'HCC{}',
+                     "LEP{'sigma': 0.6}",
+                     "DDCMA{'sigma': 1.5}",
+                     "CCPSO2{'group_sizes': [2, 4, 8, 20]}",
+                     "ONES{'sigma': 1.5}",
+                     "SGES{'sigma': 0.6}",
+                     "RHC{'x': [], 'sigma': 0.3, 'temperature': 500.0}",
+                     'GENITOR{}',
+                     "CEP{'sigma': 0.1}",
+                     "DDCMA{'sigma': 0.1}",
+                     "MRAS{'sigma': 1.5}",
+                     "DDCMA{'sigma': 3.0}",
+                     "MRAS{'sigma': 0.9}",
+                     "ONES{'sigma': 0.6}",
+                     'SHADE{}',
+                     "MRAS{'sigma': 3.0}",
+                     "FEP{'sigma': 0.1}",
+                     "ONES{'sigma': 0.9}",
+                     'LAMCTS{}',
+                     "ENES{'sigma': 3.0}",
+                     "DDCMA{'sigma': 0.3}",
+                     "MMES{'sigma': 0.9}",
+                     "CEP{'sigma': 0.6}",
+                     "CEP{'sigma': 3.0}",
+                     "ENES{'sigma': 0.3}",
+                     "SGES{'sigma': 0.3}",
+                     "DDCMA{'sigma': 0.9}",
+                     "LEP{'sigma': 0.9}",
+                     "LEP{'sigma': 0.1}",
+                     "MRAS{'sigma': 0.1}",
+                     "LEP{'sigma': 0.3}",
+                     'G3PCX{}',
+                     'JADE{}',
+                     "ONES{'sigma': 0.1}",
+                     "ENES{'sigma': 0.9}",
+                     "MRAS{'sigma': 0.6}",
+                     "CEP{'sigma': 0.3}",
+                     "LEP{'sigma': 1.5}",
+                     "MMES{'sigma': 0.3}",
+                     "MMES{'sigma': 0.1}"]
 
-
-def _get_params(
-    opt_name: str, grid: dict[str, dict[str, list]]
-) -> dict[str, list[float | int]]:
-    method_group = methods2groups[opt_name]
-    parameters_name = method_group.split("_")[0] + "_parameters"
-    result = grid[parameters_name].copy()
-    if opt_name == "CCPSO2":
-        result["group_sizes"] = [[40 // i for i in [20, 10, 5, 2]]]
-    if opt_name == "CPSO":
-        result["n_individuals"] = [20]
-    if opt_name in ["SRS", "ARHC", "RHC"]:
-        result["sigma"] = [0.1, 0.3, 0.6, 0.9, 1.5, 3.0]
-    if opt_name in ["RHC", "ARHC"]:
-        result["temperature"] = [20.0, 50.0, 100.0, 200.0, 500.0]
-    return result
-
-
-def _get_optimizers() -> list[tuple[Optimizer, dict]]:
-    param_grid = _get_parameter_grid()
-    optimizers: list[tuple[Optimizer, dict]] = []
-    for key, cls in modules.items():
-        all_possible_params = _get_params(key, param_grid)
-        params_names = list(all_possible_params.keys())
-        for params_set in product(
-            *[all_possible_params[name] for name in params_names]
-        ):
-            params_dict = {name: val for name, val in zip(params_names, params_set)}
-            optimizers.append((cls, params_dict))
-
-    return optimizers
-
-
-optimizers = sorted(_get_optimizers(), key=lambda x: str(x))
+optimizers = sorted([extract(i) for i in failed_optimizers], key=lambda x: str(x))
