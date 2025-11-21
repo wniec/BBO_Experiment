@@ -21,7 +21,7 @@ source "$ENV_PATH"
 
 # Run Experiment
 echo "Running experiment $SLURM_ARRAY_TASK_ID"
-python3 "src/main.py" "$SLURM_ARRAY_TASK_ID" "$REPORTS_PATH"
+python3 "bbo_experiment/main.py" "$SLURM_ARRAY_TASK_ID" "$REPORTS_PATH"
 
 # shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
