@@ -5,8 +5,8 @@
 #SBATCH --array=0-422
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=1G
-#SBATCH --time=08:00:00
+#SBATCH --mem=128G
+#SBATCH --time=72:00:00
 #SBATCH --partition=plgrid
 
 # CONFIGURATION

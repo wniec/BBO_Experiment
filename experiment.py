@@ -41,7 +41,7 @@ def coco_bbob_single_function(optimizer, function: cocoex.interface.Problem, opt
     return results
 
 
-def get_auoc(run_data: np.ndarray):
+def area_under_optimization_curve(run_data: np.ndarray):
     return run_data.mean(axis=0)[0, 0]
 
 
@@ -50,5 +50,7 @@ def average_auoc(function_data: cocopp.pproc.DataSet):
     # in different ranges, not necessarily [0, 1]
     trials = function_data.splitByTrials(whichdata="funvals")
     # average over all runs
-    result = sum(get_auoc(run_data) for key, run_data in trials.items()) / len(trials)
+    result = {
+        key: area_under_optimization_curve(run_data) for key, run_data in trials.items()
+    }
     return result

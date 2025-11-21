@@ -26,7 +26,12 @@ def main(evaluations_multiplier, run_id):
     case_name = f"{run_id}_{evaluations_multiplier}"
     cocopp.genericsettings.outputdir = f"{optimizer_id}_{evaluations_multiplier}"
     dslist = cocopp.main(result_path)
-    return {f"f{i.funcId}_{i.dim}": average_auoc(i) for i in dslist[(case_name, "")]}
+    result = {}
+    for problem in dslist[(case_name, "")]:
+        auoc_for_instances = average_auoc(problem)
+        for instance_id, auoc in auoc_for_instances.items():
+            result[f"f{problem.funcId}_{problem.dim}_{instance_id}"] = auoc
+    return result
 
 
 if __name__ == "__main__":
@@ -52,5 +57,7 @@ if __name__ == "__main__":
         ) as fp:
             json.dump(result, fp)
 
-        shutil.rmtree(os.path.join("exdata", f"{optimizer_id}_{evaluations_multiplier}"))
+        shutil.rmtree(
+            os.path.join("exdata", f"{optimizer_id}_{evaluations_multiplier}")
+        )
         shutil.rmtree(os.path.join(f"{optimizer_id}_{evaluations_multiplier}"))
