@@ -11,7 +11,7 @@
 
 # CONFIGURATION
 REPORTS_PATH="$SCRATCH/OUTPUT"
-ENV_PATH="$SCRATCH/BBO_Experiment/venv/bin/activate"
+ENV_PATH="$SCRATCH/BBO_Experiment/.venv/bin/activate"
 
 # Ensure reports directory exists
 mkdir -p "$REPORTS_PATH"
@@ -21,7 +21,7 @@ source "$ENV_PATH"
 
 # Run Experiment
 echo "Running experiment $SLURM_ARRAY_TASK_ID"
-python3 "main.py" "$SLURM_ARRAY_TASK_ID" "$REPORTS_PATH"
+python3 "src/main.py" "$SLURM_ARRAY_TASK_ID" "$REPORTS_PATH"
 
 # shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
