@@ -3,7 +3,7 @@ name = "bbo-experiment"
 version = "0.1.0"
 description = ""
 authors = [{ name = "wniec", email = "niecwladek@gmail.com" }]
-requires-python = "==3.12,<4"
+requires-python = ">=3.12,<3.13"
 readme = "README.md"
 dependencies = [
     "numpy==1.26.4",

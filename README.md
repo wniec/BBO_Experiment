@@ -14,7 +14,11 @@ HPC-based experiment can be performed by installation via:
 ```bash
 uv sync
 ```
-and run:
+in case of uv installation, experiment runner can also be installed by:
+```bash
+pip install .
+```
+running experiments:
 ```bash
 sbatch runner.slurm
 ```
